@@ -46,18 +46,22 @@ func Add(ctx *fasthttp.RequestCtx) {
 }
 
 func Get(ctx *fasthttp.RequestCtx) {
-	u := &models.User{}
+	u := &models.UserChat{}
 	u.UnmarshalJSON(ctx.PostBody())
 
 	var rows *pgx.Rows
-	rows, _ = db.Query(`SELECT c.chat_id, c.name, c.created_at
-						FROM chats c
-						JOIN userchats uc
-						ON (c.chat_id = uc.userchat_id)
-						JOIN messages m
-						ON (c.chat_id = m.chat)
-						WHERE uc.user_id = $1
-						ORDER BY m.created_at ASC;`, u.UserID)
+	rows, _ = db.Query(`SELECT chat_id, name, created_at
+						FROM chats
+						JOIN userchats
+						ON (chats.chat_id = userchats.userchat_id)
+						LEFT JOIN (
+							SELECT chat, max(created_at) AS newest
+							FROM messages
+							GROUP BY chat
+						) m
+						ON m.chat = chats.chat_id
+						WHERE user_id = $1
+						ORDER BY newest DESC;`, u.UserID)
 
 	time := &pgtype.Timestamptz{}
 	chats := make(models.ChatsArr, 0, 16)
@@ -71,4 +75,6 @@ func Get(ctx *fasthttp.RequestCtx) {
 
 	payload, _ := chats.MarshalJSON()
 	common.WriteResponse(ctx, fasthttp.StatusOK, payload)
+
+	return
 }

@@ -15,9 +15,9 @@ func main() {
 	r.POST("/users/add", users.Add)
 	r.POST("/chats/add", chats.Add)
 	r.POST("/messages/add", messages.Add)
-	r.POST("/chats/get", chats.Get)
-	r.POST("/messages/get", messages.Get)
+	r.GET("/chats/get", chats.Get)
+	r.GET("/messages/get", messages.Get)
 
 	log.Println("Listening on localhost:9000...")
-	fasthttp.ListenAndServe(":9000", r.Handler)
+	fasthttp.ListenAndServe("http://localhost:9000", r.Handler)
 }

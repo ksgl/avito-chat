@@ -6,6 +6,7 @@ import (
 	"avito-chat/models"
 
 	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/pgtype"
 	"github.com/valyala/fasthttp"
 )
 
@@ -38,5 +39,29 @@ func Add(ctx *fasthttp.RequestCtx) {
 }
 
 func Get(ctx *fasthttp.RequestCtx) {
+	c := &models.ChatMessages{}
+	c.UnmarshalJSON(ctx.PostBody())
 
+	var rows *pgx.Rows
+	rows, _ = db.Query(`SELECT message_id, chat, author, text, messages.created_at
+						FROM messages
+						JOIN chats
+						ON (messages.chat = chats.chat_id)
+						WHERE chat_id = $1
+						ORDER BY messages.created_at ASC;`, c.ChatID)
+
+	time := &pgtype.Timestamptz{}
+	messages := make(models.MessagesArr, 0, 16)
+	for rows.Next() {
+		message := models.Message{}
+		rows.Scan(&message.MessageID, &message.Chat, &message.Author, &message.Text, time)
+		message.CreatedAt = time.Time
+		messages = append(messages, &message)
+	}
+	rows.Close()
+
+	payload, _ := messages.MarshalJSON()
+	common.WriteResponse(ctx, fasthttp.StatusOK, payload)
+
+	return
 }
