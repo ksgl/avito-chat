@@ -1,7 +1,7 @@
 # A Chat API Server (Golang + PostgreSQL)
 
 ### Deployment
-API lives here.
+API lives [here](http://167.71.252.215:9000).
 
 ### Build Instructions
 Assuming you've cloned this repo:
