@@ -9,8 +9,8 @@ RUN apt-get -y update
 RUN apt install -y gcc git wget
 RUN apt install -y postgresql-$PGSQLVER
 
-RUN wget https://dl.google.com/go/go1.11.2.linux-amd64.tar.gz
-RUN tar -xvf go1.11.2.linux-amd64.tar.gz
+RUN wget https://dl.google.com/go/go1.12.7.linux-amd64.tar.gz
+RUN tar -xvf go1.12.7.linux-amd64.tar.gz
 RUN mv go /usr/local
 
 ENV GOROOT /usr/local/go
@@ -40,5 +40,4 @@ EXPOSE 5432
 
 USER root
 
-RUN go build $GOPATH/avito-chat/cmd/main.go
-CMD service postgresql start && ./main
+CMD service postgresql start && go run $GOPATH/avito-chat/cmd/main.go
