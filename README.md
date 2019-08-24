@@ -6,8 +6,7 @@ API lives here.
 ### Build Instructions
 Assuming you've cloned this repo:
 ```
-docker build . -t chat-api-server
-docker run -p 9000:9000 --name chat-api-server -t chat-api-server
+docker-compose up
 ```
 Now you have your server available at `http://localhost:9000`
 
