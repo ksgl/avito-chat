@@ -18,6 +18,6 @@ func main() {
 	r.GET("/chats/get", chats.Get)
 	r.GET("/messages/get", messages.Get)
 
-	log.Println("Listening on localhost:9000...")
-	fasthttp.ListenAndServe("http://localhost:9000", r.Handler)
+	log.Println("Listening on http://localhost:9000...")
+	fasthttp.ListenAndServe(":9000", r.Handler)
 }
